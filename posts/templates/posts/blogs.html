@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+    {% for blog in object_list %}
+        <b>{{ blog.id }}</b> <a href="{% url 'blogs:oneblog' pk=blog.id %}">{{ blog.title }}</a>
+        <b>{{ blog.author }}</b><br/>
+    {% endfor %}
+{% endblock %}

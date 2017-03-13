@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+    <div>Test Passed {{ comment_id|default:"No comment" }}</div>
+    <div>{{ post_id }}, {{ blog_id }}</div>
+{% endblock %}
+
+{% block title %}TITLE{% endblock %}

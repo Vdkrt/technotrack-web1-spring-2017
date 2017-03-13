@@ -1,0 +1,19 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+    <h2><a href="{% url 'blogs:oneblog' pk=object.blog.id %}">All posts</a></h2>
+    <h2><a href="{% url 'blogs:onepost' pk=object.id%}"></a></h2>
+    <h2>{{ object.title }}</h2>
+    <b2>{{ object.author }}</b2><br/>
+    <h1>{{ object.text }}</h1><br/>
+
+
+    {% if object.comment_set.all %}
+        <div>
+        <b>Comments</b><br/>
+        {% for comment in object.comment_set.all %}
+            <i>{{ comment.text }}</i><br/>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
