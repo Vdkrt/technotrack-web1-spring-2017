@@ -1,17 +1,25 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-    <h2><a href="{% url 'blogs:allblogs' %}">All blogs</a></h2>
-    <h1>{{ object.title }}</h1>
-    <p>{{ object.author }}</p>
+    <h2><a href="{% url 'blogs:allblogs' %}">All blogs</a>>>{{ object.title }}</h2><br/>
+    <p>{{ object.author }}</p><br/>
 
-    <b>{{ object.description }}</b>
-
+    <b>{{ object.description }}</b><br/>
+    {% if blog.author == user %}
+    <b><a href="{% url 'blogs:editblog' pk=blog.id %}">Редактировать</a></b><br/>
+    {% endif %}
+    <br/>
+    <b>Posts</b><br/>
+    {% if blog.author == user %}
+    <a href="{% url "blogs:createpost" %}">Новый пост</a></br><br/>
+    {% endif %}
     {% if object.post_set.all %}
         <div>
-        <b>Posts</b>
         {% for post in object.post_set.all %}
-            <i><a href="{%  url 'blogs:onepost' pk=post.id %}"{{ post.title }}</i><br/>
+            <i><a href="{%  url 'blogs:onepost' pk=post.id %}">{{ post.title }}</a></i>
+            {% if blog.author == user %}
+            <b><a href="{% url 'blogs:editpost' pk=post.id %}">Редактировать</a></b><br/>
+            {% endif %}
             <i>{{ post.text }}</i><br/>
         {% endfor %}
         </div>

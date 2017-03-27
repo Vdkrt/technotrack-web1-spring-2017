@@ -20,8 +20,9 @@ from core.views import HomePageView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^blogs/', include('posts.urls', namespace='blogs')),
+    url(r'^', include('posts.urls', namespace='blogs')),
     url(r'^$', HomePageView.as_view(), name='home'),
+    url(r'^core/', include('core.urls', namespace='core')),
 
 ]
 

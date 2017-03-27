@@ -5,7 +5,19 @@
     </head>
 
     <body>
-        <h2>{% block  title %}{% endblock %}</h2>
+        <h2>{% block  title %}
+
+            {% if user.is_anonymous %}
+                <a href="{% url 'home' %}">Главная</a><br/>
+                <a href="{% url "core:login" %}">Войти</a>
+                <a href="{% url "core:register" %}">Зарегистрироваться</a>
+            {% else %}
+                <a href="{% url 'home' %}">Главная</a><br/>
+                {{ user.username }}
+                <a href="{% url "core:logout" %}">Выйти</a>
+
+            {% endif %}
+        {% endblock %}</h2>
         {% block content %}{% endblock %}
     </body>
 </html>

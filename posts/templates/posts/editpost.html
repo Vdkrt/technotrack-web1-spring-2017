@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h2><a href="{% url 'blogs:oneblog' pk=object.id %}">Отмена</a></h2><br/>
+
+    <form method="post">
+        {{ form.errrors }}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit">
+    </form>
+
+{% endblock %}

@@ -9,3 +9,4 @@ class CommentsList(ListView):
 
     queryset = Post.objects.all()
     template_name = 'comments/comments.html'
+

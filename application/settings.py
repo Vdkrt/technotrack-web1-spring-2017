@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'core.apps.CoreConfig',
     'posts.apps.PostsConfig',
     'comments.apps.CommentsConfig'
@@ -55,6 +56,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'application.urls'
+
+LOGIN_URL = 'core:login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
 
 TEMPLATES = [
     {

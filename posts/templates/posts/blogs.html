@@ -1,8 +1,27 @@
 {% extends "core/base.html" %}
+{% load widget_tweaks %}
 
 {% block content %}
+    <h2>All blogs</h2><br/>
+    <br/>
+    <div>
+        <form method="get" action="{% url "blogs:allblogs" %}">
+            Сортировать по: {{ sortform.sort }}<br/>
+            Искать: {{ sortform.search }}<br/>
+            <input type="submit">
+        </form>
+    </div>
+    <br/>
+    {% if user.is_authenticated %}
+        <b><a href="{% url 'blogs:createblog' %}">Новый блог</a></b><br/>
+    {% endif %}
+    <br/>
     {% for blog in object_list %}
         <b>{{ blog.id }}</b> <a href="{% url 'blogs:oneblog' pk=blog.id %}">{{ blog.title }}</a>
-        <b>{{ blog.author }}</b><br/>
+        <b>({{ blog.author }})</b>
+        {% if blog.author == user %}
+            <b><a href="{% url 'blogs:editblog' pk=blog.id %}">Редактировать</a></b>
+        {% endif %}
+        <br/>
     {% endfor %}
 {% endblock %}
