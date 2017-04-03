@@ -1,0 +1,34 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h2><a href="{% url 'blogs:allblogs' %}">All blogs</a>>><a
+            href="{% url 'blogs:oneblog' pk=post.blog.id %}">{{ post.blog.title }}</a>>>{{ post.title }}</h2>
+    <h2><a href="{% url 'blogs:onepost' pk=post.id %}"></a></h2>
+    <b2>{{ post.author }}</b2><br/>
+    <h1>{{ post.text }}</h1><br/>
+    {% if post.author == user %}
+        <b><a href="{% url 'blogs:editpost' pk=post.id %}">Редактировать</a></b><br/>
+    {% endif %}
+    <br/>
+
+    {% if post.comment_set.all %}
+        <div>
+            <b>Comments</b><br/>
+            {% for comment in post.comment_set.all %}
+                <b>{{ comment.author }}</b>
+                <i>{{ comment.text }}</i><br/>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <br/>
+
+    <form method="post">
+        {{ form.errrors }}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit">
+    </form>
+
+
+{% endblock %}

@@ -13,7 +13,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     rate = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    create_date = models.DateTimeField(auto_now_add=True)
     category = models.ManyToManyField(Category)
 
 class Post(models.Model):
@@ -22,9 +22,10 @@ class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='posts')
     blog = models.ForeignKey(Blog)
     text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    create_date = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='like')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
     post = models.ForeignKey(Post)
+    create_date = models.DateTimeField(auto_now_add=True)

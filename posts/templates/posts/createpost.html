@@ -6,7 +6,6 @@
     <form method="post">
         {{ form.errrors }}
         {% csrf_token %}
-        {{ form.blog }}
         {{ form.as_p }}
         <input type="submit">
     </form>

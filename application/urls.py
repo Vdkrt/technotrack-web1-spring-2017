@@ -16,13 +16,15 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
-from core.views import HomePageView
+from core.views import HomePageView, ShowError
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('posts.urls', namespace='blogs')),
     url(r'^$', HomePageView.as_view(), name='home'),
     url(r'^core/', include('core.urls', namespace='core')),
+    url(r'^error/', ShowError.as_view(), name='error')
+
 
 ]
 

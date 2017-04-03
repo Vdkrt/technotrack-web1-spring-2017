@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, get_object_or_404
+from django.http import request
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
+
+from comments.models import Comment
 from .models import Blog, Post
 from django import forms
 from django.shortcuts import resolve_url
@@ -16,8 +19,9 @@ class SortBlogFrom(forms.Form):
             ('title', u'Заголовок'),
             ('rate', u'Рейтинг'),
             ('description', u'Описание'),
-            ('created_at', u'Дате публикации'),
+            ('create_date', u'Дате публикации'),
         ),
+        required=False
 
     )
 
@@ -28,9 +32,9 @@ class SortPostFrom(forms.Form):
     sort = forms.ChoiceField(
         choices=(
             ('title', u'Заголовок'),
-            ('created_at', u'Дате публикации'),
+            ('create_date', u'Дате публикации'),
         ),
-
+        required=False
     )
 
     search = forms.CharField(required=False)
@@ -47,7 +51,8 @@ class BlogsList(ListView):
     def get_queryset(self):
         queryset = super(BlogsList, self).get_queryset()
         if self.sortform.is_valid():
-            queryset = queryset.order_by(self.sortform.cleaned_data['sort'])
+            if self.sortform.cleaned_data['sort']:
+                queryset = queryset.order_by(self.sortform.cleaned_data['sort'])
             if self.sortform.cleaned_data['search']:
                 queryset = queryset.filter(title=self.sortform.cleaned_data['search'])
         return queryset
@@ -58,10 +63,9 @@ class BlogsList(ListView):
         return context
 
 
-class BlogView(DetailView):
-    queryset = Blog.objects.all()
+class BlogView(ListView):
+    queryset = Post.objects.all()
     template_name = 'posts/blog.html'
-
     def dispatch(self, request, *args, **kwargs):
         self.sortform = SortPostFrom(request.GET)
         return super(BlogView, self).dispatch(request, *args, **kwargs)
@@ -69,14 +73,16 @@ class BlogView(DetailView):
     def get_queryset(self):
         queryset = super(BlogView, self).get_queryset()
         if self.sortform.is_valid():
-            queryset = queryset.order_by(self.sortform.cleaned_data['sort'])
+            if self.sortform.cleaned_data['sort']:
+                queryset = queryset.order_by(self.sortform.cleaned_data['sort'])
             if self.sortform.cleaned_data['search']:
                 queryset = queryset.filter(title=self.sortform.cleaned_data['search'])
-        return queryset
+        return queryset.filter(blog = self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super(BlogView, self).get_context_data(**kwargs)
         context['sortform'] = self.sortform
+        context['blog'] = get_object_or_404(Blog, id=self.kwargs['pk'])
         return context
 
 
@@ -96,14 +102,24 @@ class UpdateBlog(UpdateView):
     model = Blog
     fields = ('title', 'description', 'category')
 
+    def get_queryset(self):
+        return Blog.objects.filter(author=self.request.user)
+
     def get_success_url(self):
         return resolve_url('blogs:oneblog', pk=self.object.id)
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(UpdateBlog, self).form_valid(form)
 
 
 class CreateBlog(CreateView):
     template_name = 'posts/createblog.html'
     model = Blog
     fields = ('title', 'description', 'category')
+
+    def get_queryset(self):
+        return Blog.objects.filter(author=self.request.user)
 
     def get_success_url(self):
         return resolve_url('blogs:oneblog', pk=self.object.id)
@@ -125,21 +141,41 @@ class UpdatePost(UpdateView):
     model = Post
     fields = ('title', 'text')
 
-    def get_success_url(self):
-        return resolve_url('blogs:onepost', pk=self.object.id)
-
-
-class CreatePost(CreateView):
-    template_name = 'posts/createpost.html'
-    model = Post
-    user = get_user_model()
-    blog = forms.ChoiceField(queryset=Blog.objects.filter(author=user), label=u'Выберите блог')
-    fields = ('title', 'text')
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user)
 
     def get_success_url(self):
         return resolve_url('blogs:onepost', pk=self.object.id)
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        return super(UpdatePost, self).form_valid(form)
+
+
+
+class CreatePost(CreateView):
+    template_name = 'posts/createpost.html'
+    model = Post
+    fields = ('title', 'text')
+
+
+    def get_success_url(self):
+        return resolve_url('blogs:onepost', pk = self.object.id)
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
         form.instance.rate = 0
+        form.instance.blog = get_object_or_404(Blog, id = self.kwargs['pk'])
         return super(CreatePost, self).form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        blog = get_object_or_404(Blog, id=self.kwargs['pk'])
+        if blog.author == self.request.user:
+            return super(CreatePost, self).dispatch(request, *args, **kwargs)
+        else:
+            return redirect('error')
+
+
+
+
+

@@ -10,4 +10,4 @@ class Comment(models.Model):
     text = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments')
     likes = models.IntegerField(default = 0)
-    created_at = models.DateTimeField(auto_now_add = True)
+    create_time = models.DateTimeField(auto_now_add = True)

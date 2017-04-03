@@ -9,6 +9,9 @@ from django.shortcuts import resolve_url
 
 # Create your views here.
 
+class ShowError(TemplateView):
+    template_name = 'core/error.html'
+
 class CreateUser(UserCreationForm):
 
     class Meta:
