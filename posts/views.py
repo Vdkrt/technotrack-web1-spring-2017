@@ -119,9 +119,6 @@ class CreateBlog(CreateView):
     model = Blog
     fields = ('title', 'description', 'category')
 
-    def get_queryset(self):
-        return Blog.objects.filter(author=self.request.user)
-
     def get_success_url(self):
         return resolve_url('blogs:oneblog', pk=self.object.id)
 
