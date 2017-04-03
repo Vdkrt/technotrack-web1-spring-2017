@@ -66,6 +66,7 @@ class BlogsList(ListView):
 class BlogView(ListView):
     queryset = Post.objects.all()
     template_name = 'posts/blog.html'
+
     def dispatch(self, request, *args, **kwargs):
         self.sortform = SortPostFrom(request.GET)
         return super(BlogView, self).dispatch(request, *args, **kwargs)
@@ -77,7 +78,7 @@ class BlogView(ListView):
                 queryset = queryset.order_by(self.sortform.cleaned_data['sort'])
             if self.sortform.cleaned_data['search']:
                 queryset = queryset.filter(title=self.sortform.cleaned_data['search'])
-        return queryset.filter(blog = self.kwargs['pk'])
+        return queryset.filter(blog=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super(BlogView, self).get_context_data(**kwargs)
@@ -152,25 +153,24 @@ class UpdatePost(UpdateView):
         return super(UpdatePost, self).form_valid(form)
 
 
-
 class CreatePost(CreateView):
     template_name = 'posts/createpost.html'
     model = Post
-    fields = ('title', 'text')
+    fields = ('title', 'text', 'blog')
 
-#     def get_form(self):
-#        form = super(CreatePost, self).get_form()
-#        form.field['blog'].queryset = Blog.objects.all().filter(author = self.request.user)
-#        return form
+    def get_form(self, **kwargs):
+        form = super(CreatePost, self).get_form()
+        form.fields['blog'].queryset = Blog.objects.all().filter(author = self.request.user)
+        return form
 
 
     def get_success_url(self):
-        return resolve_url('blogs:onepost', pk = self.object.id)
+        return resolve_url('blogs:onepost', pk=self.object.id)
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.rate = 0
-        form.instance.blog = get_object_or_404(Blog, id = self.kwargs['pk'])
+        #form.instance.blog = get_object_or_404(Blog, id=self.kwargs['pk'])
         return super(CreatePost, self).form_valid(form)
 
     def dispatch(self, request, *args, **kwargs):
@@ -179,8 +179,3 @@ class CreatePost(CreateView):
             return super(CreatePost, self).dispatch(request, *args, **kwargs)
         else:
             return redirect('error')
-
-
-
-
-
