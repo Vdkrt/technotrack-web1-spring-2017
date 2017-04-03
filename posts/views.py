@@ -158,6 +158,11 @@ class CreatePost(CreateView):
     model = Post
     fields = ('title', 'text')
 
+#     def get_form(self):
+#        form = super(CreatePost, self).get_form()
+#        form.field['blog'].queryset = Blog.objects.all().filter(author = self.request.user)
+#        return form
+
 
     def get_success_url(self):
         return resolve_url('blogs:onepost', pk = self.object.id)
