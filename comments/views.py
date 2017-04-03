@@ -34,7 +34,6 @@ class PostDetail(CreateView):
     def dispatch(self, request, *args, **kwargs):
         self.sortform = SortCommentFrom(request.GET)
         self.postobject = get_object_or_404(Post, id = kwargs['pk'])
-        print(super(PostDetail, self))
         return super(PostDetail, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
