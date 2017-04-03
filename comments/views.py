@@ -33,7 +33,8 @@ class PostDetail(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.sortform = SortCommentFrom(request.GET)
-        self.post = get_object_or_404(Post, id = kwargs['pk'])
+        self.postobject = get_object_or_404(Post, id = kwargs['pk'])
+        print(super(PostDetail, self))
         return super(PostDetail, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -48,14 +49,15 @@ class PostDetail(CreateView):
     def get_context_data(self, **kwargs):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['sortform'] = self.sortform
-        context['post'] = self.post
+        context['post'] = self.postobject
         return context
 
     def get_success_url(self):
-        return resolve_url('blogs:onepost', pk = self.post.id)
+        return resolve_url('blogs:onepost', pk = self.postobject.id)
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.rate = 0
+        form.instance.post = self.postobject
         return super(PostDetail, self).form_valid(form)
 
